@@ -12,11 +12,11 @@ class TauronService:
         self.dashboard_response, self.session = Session().login()
         self.parser = HtmlParser(self.dashboard_response.content)
 
-    def navigate(self, url):
+    def _navigate(self, url):
         self.session.mount(url, Ssl3HttpAdapter())
         return self.session.get(url)
 
-    def get_saldo(self):
+    def get_total_debt(self):
         content = self.dashboard_response.content
         return self.parser.get_total_debt(content)
 
@@ -45,4 +45,4 @@ class Session:
 
 if __name__ == '__main__':
     service = TauronService()
-    print(service.get_saldo())
+    print(service.get_total_debt())
