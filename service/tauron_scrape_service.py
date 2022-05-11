@@ -4,6 +4,8 @@ from requests.adapters import HTTPAdapter
 from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
 from config.env_enum import Environment
 from soup.html_parser import HtmlParser
+from util.formatter import remove_non_digits
+from datetime import datetime
 
 
 @singleton
@@ -19,6 +21,30 @@ class TauronService:
     def get_total_debt(self):
         content = self.dashboard_response.content
         return self.parser.get_total_debt(content)
+
+    def get_last_reading(self):
+        return self.parser.get_last_reading(self.dashboard_response.content)
+
+    def _next_bill_date_time(self):
+        content = self.dashboard_response.content
+        date = self.parser.get_next_bill(content).strip()
+        date = remove_non_digits(date)
+        date = datetime.strptime(date, '%d%m%Y')
+
+        return date
+
+    def is_urgent_bill(self):
+        now = datetime.now()
+        date = self._next_bill_date_time()
+        days_left = (now - date).days
+        return True if days_left > -5 else False
+
+    def next_due_bill_date(self):
+        return self._next_bill_date_time().strftime('%d-%m-%Y')
+
+    def next_bill_value(self):
+        content = self.dashboard_response.content
+        return self.parser.get_next_bill_value(content).strip()
 
 
 @singleton
@@ -46,3 +72,7 @@ class Session:
 if __name__ == '__main__':
     service = TauronService()
     print(service.get_total_debt())
+    print(service.get_last_reading())
+    print(service.is_urgent_bill())
+    print(service.next_due_bill_date())
+    print(service.next_bill_value())
