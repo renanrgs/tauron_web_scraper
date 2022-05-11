@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
+from util.singleton import singleton
 
 
+@singleton
 class HtmlParser:
 
     def __init__(self, content=None):
