@@ -1,10 +1,8 @@
 import ssl
 import urllib3
 from requests.adapters import HTTPAdapter
-from util.singleton import singleton
 
 
-@singleton
 class Ssl3HttpAdapter(HTTPAdapter):
     """"Transport adapter" that allows us to use SSLv3."""
 

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 import requests
-from util.singleton import singleton
 from requests.adapters import HTTPAdapter
 from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
 from config.env_enum import Environment
@@ -16,15 +15,19 @@ class Session(ABC):
     def login(self):
         pass
 
+    @abstractmethod
+    def get_http_adapter(self):
+        pass
 
-@singleton
+
 class TauronService:
     def __init__(self, session: Session):
         self.dashboard_response, self.session = session.login()
         self.parser = HtmlParser(self.dashboard_response.content)
+        self.http_adapter = session.get_http_adapter()
 
     def _navigate(self, url):
-        self.session.mount(url, Ssl3HttpAdapter())
+        self.session.mount(url, self.http_adapter)
         return self.session.get(url)
 
     def get_total_debt(self):
@@ -56,7 +59,6 @@ class TauronService:
         return self.parser.get_next_bill_value(content).strip()
 
 
-@singleton
 class TauronSession(Session):
 
     def __init__(self, adapter: HTTPAdapter = Ssl3HttpAdapter()):
@@ -70,6 +72,9 @@ class TauronSession(Session):
         response = self.session.post(self.url, cookies={'PHPSESSID': ''}, data=user_data, allow_redirects=False)
         response = self._manage_redirects(self.session, response)
         return response, self.session
+
+    def get_http_adapter(self):
+        return self.adapter
 
     def _manage_redirects(self, session, response):
         while response.next:
