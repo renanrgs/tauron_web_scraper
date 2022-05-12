@@ -1,5 +1,8 @@
 import re
 
 
-def remove_non_digits(string):
-    return re.sub('\\D', '', string)
+class Util:
+
+    @staticmethod
+    def remove_non_digits(string):
+        return re.sub('\\D', '', string)

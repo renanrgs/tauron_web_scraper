@@ -22,4 +22,5 @@ class HtmlParser:
 
     def get_next_bill_value(self, content):
         self.parser.markup = content
-        return self.parser.select_one('body > div.content > div > div.columnLong > section.moduleSeparator.clearfix > div.lastInvoiceList.clearfix > div:nth-child(1) > span.ammount.red').text
+        return self.parser.select_one('body > div.content > div > div.columnLong > section.moduleSeparator.clearfix > '
+                                      'div.lastInvoiceList.clearfix > div:nth-child(1) > span.ammount.red').text

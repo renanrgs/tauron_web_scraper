@@ -1,17 +1,26 @@
+from abc import ABC, abstractmethod
+
 import requests
 from util.singleton import singleton
 from requests.adapters import HTTPAdapter
 from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
 from config.env_enum import Environment
 from soup.html_parser import HtmlParser
-from util.formatter import remove_non_digits
+from util.formatter import Util
 from datetime import datetime
+
+
+class Session(ABC):
+
+    @abstractmethod
+    def login(self):
+        pass
 
 
 @singleton
 class TauronService:
-    def __init__(self):
-        self.dashboard_response, self.session = Session().login()
+    def __init__(self, session: Session):
+        self.dashboard_response, self.session = session.login()
         self.parser = HtmlParser(self.dashboard_response.content)
 
     def _navigate(self, url):
@@ -28,7 +37,7 @@ class TauronService:
     def _next_bill_date_time(self):
         content = self.dashboard_response.content
         date = self.parser.get_next_bill(content).strip()
-        date = remove_non_digits(date)
+        date = Util.remove_non_digits(date)
         date = datetime.strptime(date, '%d%m%Y')
 
         return date
@@ -48,7 +57,7 @@ class TauronService:
 
 
 @singleton
-class Session:
+class TauronSession(Session):
 
     def __init__(self, adapter: HTTPAdapter = Ssl3HttpAdapter()):
         self.url = 'https://logowanie.tauron.pl/login'
@@ -70,7 +79,7 @@ class Session:
 
 
 if __name__ == '__main__':
-    service = TauronService()
+    service = TauronService(session=TauronSession())
     print(service.get_total_debt())
     print(service.get_last_reading())
     print(service.is_urgent_bill())
