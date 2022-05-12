@@ -68,8 +68,10 @@ class TauronSession(Session):
         self.session.mount(self.url, adapter=self.adapter)
 
     def login(self):
-        user_data = {'username': Environment.TAURON_USER.value, 'password': Environment.TAURON_PASSWORD.value}
-        response = self.session.post(self.url, cookies={'PHPSESSID': ''}, data=user_data, allow_redirects=False)
+        user_data = {'username': Environment.TAURON_USER.value,
+                     'password': Environment.TAURON_PASSWORD.value}
+        response = self.session.post(
+            self.url, cookies={'PHPSESSID': ''}, data=user_data, allow_redirects=False)
         response = self._manage_redirects(self.session, response)
         return response, self.session
 
