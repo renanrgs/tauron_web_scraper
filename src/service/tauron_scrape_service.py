@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
+from dataclasses import asdict
 
 import requests
 from requests.adapters import HTTPAdapter
+from data_model.user_data import UserData
 from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
 from config.env_enum import Environment
 from soup.html_parser import HtmlParser
 from util.formatter import Util
 from datetime import datetime
+from data_model import user_data
 
 
 class Session(ABC):
@@ -68,8 +71,8 @@ class TauronSession(Session):
         self.session.mount(self.url, adapter=self.adapter)
 
     def login(self):
-        user_data = {'username': Environment.TAURON_USER.value, 'password': Environment.TAURON_PASSWORD.value}
-        response = self.session.post(self.url, cookies={'PHPSESSID': ''}, data=user_data, allow_redirects=False)
+        response = self.session.post(
+            self.url, cookies={'PHPSESSID': ''}, data=asdict(user_data.credentials), allow_redirects=False)
         response = self._manage_redirects(self.session, response)
         return response, self.session
 
