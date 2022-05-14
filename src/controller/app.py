@@ -1,6 +1,5 @@
 from crypt import methods
 from dataclasses import asdict
-import pathlib
 from flask import Flask, jsonify
 
 from service.tauron_scrape_service import TauronService
