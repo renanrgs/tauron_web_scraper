@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 
 import requests
-from data_model import user_data
+from data_model.user_data import UserData
 from data_model.bill import Bill
 from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
 from requests.adapters import HTTPAdapter
@@ -31,8 +31,8 @@ class TauronSession(Session):
         self.session.mount(self.url, adapter=self.adapter)
 
     def login(self):
-        response = self.session.post(
-            self.url, cookies={'PHPSESSID': ''}, data=asdict(user_data.credentials), allow_redirects=False)
+        response = self.session.post(\
+            self.url, cookies={'PHPSESSID': ''}, data=asdict(UserData()), allow_redirects=False)
         response = self._manage_redirects(self.session, response)
         return response, self.session
 
