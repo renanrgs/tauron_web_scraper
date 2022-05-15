@@ -14,3 +14,6 @@ def get_next_bill():
 
 
 app.run()
+
+if __name__ == "__main__":
+    get_next_bill()

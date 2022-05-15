@@ -17,31 +17,24 @@ class Session(ABC):
     def login(self):
         pass
 
-    @abstractmethod
-    def get_http_adapter(self):
-        pass
-
 
 class TauronSession(Session):
 
-    def __init__(self, adapter: HTTPAdapter = Ssl3HttpAdapter()):
+    def __init__(self, http_adapter: HTTPAdapter = Ssl3HttpAdapter()):
         self.url = 'https://logowanie.tauron.pl/login'
-        self.adapter = adapter
+        self.http_adapter = http_adapter
         self.session = requests.Session()
-        self.session.mount(self.url, adapter=self.adapter)
+        self.session.mount(self.url, adapter=self.http_adapter)
 
     def login(self):
-        response = self.session.post(\
+        response = self.session.post(
             self.url, cookies={'PHPSESSID': ''}, data=asdict(UserData()), allow_redirects=False)
         response = self._manage_redirects(self.session, response)
         return response, self.session
 
-    def get_http_adapter(self):
-        return self.adapter
-
     def _manage_redirects(self, session, response):
         while response.next:
-            session.mount(response.next.url, self.adapter)
+            session.mount(response.next.url, self.http_adapter)
             response = session.get(response.next.url, allow_redirects=False)
         return response
 
@@ -50,7 +43,7 @@ class TauronService:
     def __init__(self, session=TauronSession()):
         self.dashboard_response, self.session = session.login()
         self.parser = HtmlParser(self.dashboard_response.content)
-        self.http_adapter = session.get_http_adapter()
+        self.http_adapter = session.http_adapter
 
     def _navigate(self, url):
         self.session.mount(url, self.http_adapter)
