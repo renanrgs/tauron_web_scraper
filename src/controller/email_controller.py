@@ -1,5 +1,3 @@
-from crypt import methods
-from http.client import responses
 from flask import Flask
 from service.email_service import EmailService
 
