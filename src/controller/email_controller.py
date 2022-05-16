@@ -14,8 +14,8 @@ def send_bill_notification():
     bill_service = TauronService()
     email_service = EmailService()
     bill = bill_service.get_next_bill()
-    email_service.send_bill_notification(bill=bill)
-    return 'Email sent to destination'
+    email_service.send_bill_notification(bill)
+    return '<b>Email sent to destination</b>'
 
 
 app.run()
