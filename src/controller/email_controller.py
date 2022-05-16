@@ -2,7 +2,7 @@ from flask import Flask
 from service.email_service import EmailService
 
 from service.tauron_scrape_service import TauronService
-
+from example_package import example
 
 app = Flask(__name__)
 
