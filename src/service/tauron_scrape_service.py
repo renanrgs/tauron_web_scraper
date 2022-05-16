@@ -85,13 +85,3 @@ class TauronService:
         amount = self.next_bill_value()
         due_date = self.due_bill_date_str()
         return Bill(amount, due_date)
-
-
-if __name__ == '__main__':
-    service = TauronService()
-    print(service.get_total_debt())
-    print(service.get_last_reading())
-    print(service.is_urgent_bill())
-    print(service.due_bill_date_str())
-    print(service.next_bill_value())
-    print(service.get_next_bill())
