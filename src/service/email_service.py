@@ -1,4 +1,5 @@
 from data_model.bill import Bill
+from service.tauron_scrape_service import TauronService
 from util import messages
 import yagmail
 
@@ -18,6 +19,7 @@ class EmailService:
                                subject=subject, contents=content, attachments=attachment)
 
     def send_bill_notification(self, bill: Bill):
-
-        self.mail_session.send(to=self._credentials.user, subject='Outstanding Bill',
-                               contents=messages.OUTSTANDING_BILL_MSG.format(bill_amount=bill.amount, due_date=bill.due_date))
+        if TauronService.is_urgent_bill_str(bill): 
+            self.mail_session.send(to=self._credentials.user, subject='Outstanding Bill',
+                               contents=messages.OUTSTANDING_BILL_MSG
+                               .format(bill_amount=bill.amount, due_date=bill.due_date))
