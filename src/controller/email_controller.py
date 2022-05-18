@@ -3,7 +3,7 @@
 """
 from flask import Flask
 from service.email_service import EmailService
-from service.tauron_scrape_service import TauronService
+from service.bill_service import BillService
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def send_bill_notification():
     Returns:
         _type_: View content
     """
-    bill_service = TauronService()
+    bill_service = BillService()
     email_service = EmailService()
     bill = bill_service.get_next_bill()
     email_service.send_bill_notification(bill)

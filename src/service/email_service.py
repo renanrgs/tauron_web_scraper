@@ -6,7 +6,7 @@ from data_model.bill import Bill
 from data_model.email_data import GmailCredentials
 from util import messages
 
-from service.tauron_scrape_service import TauronService
+from service.bill_service import BillService
 
 
 class EmailService:
@@ -35,7 +35,7 @@ class EmailService:
         Args:
             bill (Bill): next bill
         """
-        if TauronService.is_urgent_bill_str(bill):
+        if BillService.is_urgent(bill):
             self.mail_session.send(to=self._credentials.user, subject='Outstanding Bill',
                                    contents=messages.OUTSTANDING_BILL_MSG
                                    .format(bill_amount=bill.amount, due_date=bill.due_date))

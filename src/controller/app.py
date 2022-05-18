@@ -1,9 +1,9 @@
 from dataclasses import asdict
 from flask import Flask, jsonify
 
-from service.tauron_scrape_service import TauronService
+from service.bill_service import BillService
 
-service = TauronService()
+service = BillService()
 
 app = Flask(__name__)
 

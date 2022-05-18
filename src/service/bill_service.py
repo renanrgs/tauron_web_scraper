@@ -1,45 +1,12 @@
-from abc import ABC, abstractmethod
-from dataclasses import asdict
 from datetime import datetime
 
-import requests
-from data_model.user_data import UserData
 from data_model.bill import Bill
-from http_adapter.ssl3_http_adapter import Ssl3HttpAdapter
-from requests.adapters import HTTPAdapter
+from session.session import TauronSession
 from soup.html_parser import HtmlParser
 from util.formatter import Util
 
 
-class Session(ABC):
-
-    @abstractmethod
-    def login(self):
-        pass
-
-
-class TauronSession(Session):
-
-    def __init__(self, http_adapter: HTTPAdapter = Ssl3HttpAdapter()):
-        self.url = 'https://logowanie.tauron.pl/login'
-        self.http_adapter = http_adapter
-        self.session = requests.Session()
-        self.session.mount(self.url, adapter=self.http_adapter)
-
-    def login(self):
-        response = self.session.post(
-            self.url, cookies={'PHPSESSID': ''}, data=asdict(UserData()), allow_redirects=False)
-        response = self._manage_redirects(self.session, response)
-        return response, self.session
-
-    def _manage_redirects(self, session, response):
-        while response.next:
-            session.mount(response.next.url, self.http_adapter)
-            response = session.get(response.next.url, allow_redirects=False)
-        return response
-
-
-class TauronService:
+class BillService:
     def __init__(self, session=TauronSession()):
         self.dashboard_response, self.session = session.login()
         self.parser = HtmlParser(self.dashboard_response.content)
@@ -71,7 +38,7 @@ class TauronService:
         return True if days_left > -5 else False
 
     @staticmethod
-    def is_urgent_bill_str(bill: Bill) -> bool:
+    def is_urgent(bill: Bill) -> bool:
         now = datetime.now()
         date_str = bill.due_date
         date = datetime.strptime(date_str, '%d-%m-%Y')
