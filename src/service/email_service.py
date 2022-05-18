@@ -1,13 +1,17 @@
-from data_model.bill import Bill
-from service.tauron_scrape_service import TauronService
-from util import messages
+"""email_service module is responsible for performing email operations
+like sending emails regarding bills
+"""
 import yagmail
-
+from data_model.bill import Bill
 from data_model.email_data import GmailCredentials
+from util import messages
+
+from service.tauron_scrape_service import TauronService
 
 
 class EmailService:
-
+    """Service responsible for email operations
+    """
     _credentials = GmailCredentials()
 
     def __init__(self):
@@ -15,11 +19,23 @@ class EmailService:
             user=self._credentials.user, password=self._credentials.password)
 
     def send(self, subject: str, content: str, attachment=None) -> None:
+        """Send email
+
+        Args:
+            subject (str): email subject
+            content (str): email content
+            attachment (_type_, optional): email attachment. Defaults to None.
+        """
         self.mail_session.send(to=self._credentials.user,
                                subject=subject, contents=content, attachments=attachment)
 
     def send_bill_notification(self, bill: Bill):
-        if TauronService.is_urgent_bill_str(bill): 
+        """Send email in case due date is close as 5 days
+
+        Args:
+            bill (Bill): next bill
+        """
+        if TauronService.is_urgent_bill_str(bill):
             self.mail_session.send(to=self._credentials.user, subject='Outstanding Bill',
-                               contents=messages.OUTSTANDING_BILL_MSG
-                               .format(bill_amount=bill.amount, due_date=bill.due_date))
+                                   contents=messages.OUTSTANDING_BILL_MSG
+                                   .format(bill_amount=bill.amount, due_date=bill.due_date))

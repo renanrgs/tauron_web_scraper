@@ -76,7 +76,7 @@ class TauronService:
         date_str = bill.due_date
         date = datetime.strptime(date_str, '%d-%m-%Y')
         days_left = (now - date).days
-        return True if days_left > -5 else False
+        return True if days_left >= -5 else False
 
     def due_bill_date_str(self, date_format='%d-%m-%Y'):
         return self._next_bill_date_time().strftime(date_format)
