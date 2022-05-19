@@ -39,7 +39,7 @@ def test_get_last_reading() -> None:
 
 def test_is_urgent_bill() -> None:
     """
-    Test methos is_urgent_bill
+    Test method is_urgent_bill
     :return: None
     """
     next_due_date = service.next_due_bill_datetime()
