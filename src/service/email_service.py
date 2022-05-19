@@ -2,12 +2,10 @@
 like sending emails regarding bills
 """
 import yagmail
-from data_model.bill import Bill
-from data_model.email_data import GmailCredentials
-from session.session import TauronSession
-from util import messages
 
+from data_model.email_data import GmailCredentials
 from service.bill_service import BillService
+from util import messages
 
 
 class EmailService:
@@ -31,13 +29,11 @@ class EmailService:
         self.mail_session.send(to=self._credentials.user,
                                subject=subject, contents=content, attachments=attachment)
 
-    def send_bill_notification(self, bill: Bill):
+    def send_bill_notification(self):
         """Send email in case due date is close as 5 days
-
-        Args:
-            bill (Bill): next bill
         """
-        if BillService.is_urgent(bill):
+        if self.bill_service.is_urgent_bill():
+            bill = self.bill_service.get_next_bill()
             self.mail_session.send(to=self._credentials.user, subject='Outstanding Bill',
                                    contents=messages.OUTSTANDING_BILL_MSG
                                    .format(bill_amount=bill.amount, due_date=bill.due_date))

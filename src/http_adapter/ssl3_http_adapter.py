@@ -1,10 +1,15 @@
+"""
+Httl SSL adapter module
+"""
 import ssl
+
 import urllib3
 from requests.adapters import HTTPAdapter
 
 
 class Ssl3HttpAdapter(HTTPAdapter):
-    """"Transport adapter" that allows us to use SSLv3."""
+    """"Transport adapter" that allows us to use SSLv3.
+    """
 
     def init_poolmanager(self, connections, maxsize, block=False, **kwargs):
         ctx = ssl.create_default_context()
