@@ -23,7 +23,7 @@ class BillService:
     def get_last_reading(self):
         return self.parser.get_last_reading(self.dashboard_response.content)
 
-    def _next_bill_date_time(self):
+    def next_due_bill_datetime(self):
         content = self.dashboard_response.content
         date = self.parser.get_next_bill(content).strip()
         date = Util.remove_non_digits(date)
@@ -33,20 +33,12 @@ class BillService:
 
     def is_urgent_bill(self):
         now = datetime.now()
-        date = self._next_bill_date_time()
+        date = self.next_due_bill_datetime()
         days_left = (now - date).days
         return True if days_left > -5 else False
 
-    @staticmethod
-    def is_urgent(bill: Bill) -> bool:
-        now = datetime.now()
-        date_str = bill.due_date
-        date = datetime.strptime(date_str, '%d-%m-%Y')
-        days_left = (now - date).days
-        return True if days_left >= -5 else False
-
     def due_bill_date_str(self, date_format='%d-%m-%Y'):
-        return self._next_bill_date_time().strftime(date_format)
+        return self.next_due_bill_datetime().strftime(date_format)
 
     def next_bill_value(self):
         content = self.dashboard_response.content
@@ -54,7 +46,7 @@ class BillService:
             .replace(',', '.')\
             .replace('zł', '')\
             .strip()
-        return float_value
+        return float_value # TODO Use Decimal or Int instead of float for monetary values
 
     def get_next_bill(self) -> Bill:
         amount = self.next_bill_value()
